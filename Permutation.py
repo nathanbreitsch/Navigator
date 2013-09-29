@@ -18,6 +18,15 @@ class Permutation:
     def dim(self):
         return len(self.permutation)
 
+    def sigma(self, index):
+        return(self.permutation[index])
+
+    def sigmaInv(self,index):
+        for i in range(0, self.dim()):
+            if self.permutation[i] == index:
+                return i
+        return -1
+
     #construct identity permutation
     @staticmethod
     def identity(dim):
