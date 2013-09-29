@@ -1,4 +1,5 @@
 from numpy import *
+from SatSolver import *
 
 class Word:
     def __init__(self, sequence):
@@ -6,13 +7,13 @@ class Word:
         self.sequence = sequence
         self.flips = []
         self.feasible = "unknown"
-        self.constraintVector = []
         self.constraintMatrix = []
 
     def toString(self):
         return ""
 
-    def isFeasible(self):
+    def testFeasibility(self):
+        SatSolver.solve(self.constrintMatrix)
 
 
     def testPrint(self):

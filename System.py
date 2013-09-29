@@ -25,20 +25,21 @@ class System:
             newRow[symbol.sigma(i+1)] = 1
             newRow[symbol.sigma(i)] = -1
             constraintMatrix.append(newRow)
-            constraintVector.append(0)
+            #constraintVector.append(0)
         #for now, we are NOT going to use agents for 0 and 1 in lieu of 0 < x < 1 explicit constraint
+        #actually, we can build these constraints into the solver
         #first cell greater than 0
-        newRow = System.makeZeros(symbol.dim())
-        newRow[0] = 1
-        constraintMatrix.append(newRow)
-        constraintVector.append(0)
+        #newRow = System.makeZeros(symbol.dim())
+        #newRow[0] = 1
+        #constraintMatrix.append(newRow)
+        #constraintVector.append(0)
         #second cell less than 1
-        newRow = System.makeZeros(symbol.dim())
-        newRow[0] = -1
-        constraintMatrix.append(newRow)
-        constraintVector.append(-1)
+        #newRow = System.makeZeros(symbol.dim())
+        #newRow[0] = -1
+        #constraintMatrix.append(newRow)
+        #constraintVector.append(-1)
         temp.constraintMatrix = constraintMatrix
-        temp.constraintVector = constraintVector
+        #temp.constraintVector = constraintVector
         return temp
 
 
@@ -80,6 +81,7 @@ class System:
         w1 = system.word(p1)
         print "word constraints"
         print w1.testPrint()
+        w1.testFeasibility()
 
     @staticmethod
     def makeZeros(n):
