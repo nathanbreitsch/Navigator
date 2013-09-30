@@ -25,21 +25,21 @@ class System:
             newRow[symbol.sigma(i+1)] = 1.0
             newRow[symbol.sigma(i)] = -1.0
             constraintMatrix.append(newRow)
-            #constraintVector.append(0)
+            constraintVector.append(0.0)
         #for now, we are NOT going to use agents for 0 and 1 in lieu of 0 < x < 1 explicit constraint
         #actually, we can build these constraints into the solver
         #first cell greater than 0
-        #newRow = System.makeZeros(symbol.dim())
-        #newRow[0] = 1
-        #constraintMatrix.append(newRow)
-        #constraintVector.append(0)
+        newRow = System.makeZeros(symbol.dim())
+        newRow[0] = 1.0
+        constraintMatrix.append(newRow)
+        constraintVector.append(0.0)
         #second cell less than 1
-        #newRow = System.makeZeros(symbol.dim())
-        #newRow[0] = -1
-        #constraintMatrix.append(newRow)
-        #constraintVector.append(-1)
+        newRow = System.makeZeros(symbol.dim())
+        newRow[symbol.dim()-1] = -1.0
+        constraintMatrix.append(newRow)
+        constraintVector.append(-1.0)
         temp.constraintMatrix = constraintMatrix
-        #temp.constraintVector = constraintVector
+        temp.constraintVector = constraintVector
         return temp
 
 

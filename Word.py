@@ -8,12 +8,13 @@ class Word:
         self.flips = []
         self.feasible = "unknown"
         self.constraintMatrix = []
+        self.constraintVector = []
 
     def toString(self):
         return ""
 
     def testFeasibility(self):
-        cvxSolver.solve(self.constraintMatrix)
+        cvxSolver.solve(self.constraintMatrix, self.constraintVector)
 
 
     def testPrint(self):

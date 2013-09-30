@@ -1,5 +1,4 @@
 __author__ = 'NathanBreitsch'
-from pulp import GLPK as glpk
 
 class SatSolver:
     @staticmethod

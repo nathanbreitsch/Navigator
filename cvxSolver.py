@@ -3,15 +3,18 @@ from cvxopt import matrix, solvers
 
 class cvxSolver:
     @staticmethod
-    def solve(m):
+    def solve(m,bIn):
         #build in circle constraints
         numRows = len(m)
         numCols = len(m[0])
+
+
         newRow = cvxSolver.makeZeros(len(m[0]))
 
         A = matrix(m).trans()
-        b = matrix(cvxSolver.makeZeros(len(m)))
-        c = matrix(cvxSolver.makeZeros(len(m[1])))
+        b = matrix(bIn)
+        #b = matrix(cvxSolver.makeZeros(numRows))
+        c = matrix(cvxSolver.makeZeros(numCols))
         print m
         print A
         print b
