@@ -1,5 +1,5 @@
 from numpy import *
-from SatSolver import *
+from cvxSolver import *
 
 class Word:
     def __init__(self, sequence):
@@ -13,13 +13,13 @@ class Word:
         return ""
 
     def testFeasibility(self):
-        SatSolver.solve(self.constrintMatrix)
+        cvxSolver.solve(self.constraintMatrix)
 
 
     def testPrint(self):
         rtrnString = ""
-        for i in range(0, len(self.constraintVector)):
-            rtrnString += "".join(str(e) + " + " for e in self.constraintMatrix[i]) + " >= " + str(self.constraintVector[i]) + "\n"
+        for i in range(0, len(self.constraintMatrix)):
+            rtrnString += "".join(str(e) + " + " for e in self.constraintMatrix[i]) + " >= " + "0" + "\n"
         return rtrnString
 
 

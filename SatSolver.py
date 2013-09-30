@@ -1,9 +1,11 @@
 __author__ = 'NathanBreitsch'
-import glpk
+from pulp import GLPK as glpk
 
 class SatSolver:
     @staticmethod
     def solve(matrix):
+
+
         numRows = len(matrix)
         numCols = len(matrix[0])
         lp = glpk.LPX()        # Create empty problem instance

@@ -1,4 +1,4 @@
-from numpy import *
+#from numpy import *
 from Word import *
 from Permutation import *
 
@@ -22,8 +22,8 @@ class System:
         constraintVector = []
         for i in range(0, symbol.dim()-1):
             newRow = System.makeZeros(symbol.dim())
-            newRow[symbol.sigma(i+1)] = 1
-            newRow[symbol.sigma(i)] = -1
+            newRow[symbol.sigma(i+1)] = 1.0
+            newRow[symbol.sigma(i)] = -1.0
             constraintMatrix.append(newRow)
             #constraintVector.append(0)
         #for now, we are NOT going to use agents for 0 and 1 in lieu of 0 < x < 1 explicit constraint
@@ -75,11 +75,11 @@ class System:
             return temp
         permutation = [3,1,2,4,0]
         p1 = Permutation(permutation)
-        print "trajectory for test case:"
+        print("trajectory for test case")
         print phi(p1)
         system = System(5, phi)
         w1 = system.word(p1)
-        print "word constraints"
+        print("word constraints")
         print w1.testPrint()
         w1.testFeasibility()
 
@@ -87,7 +87,7 @@ class System:
     def makeZeros(n):
         temp = []
         for i in range(0,n):
-            temp.append(0)
+            temp.append(0.0)
         return temp
 
 
