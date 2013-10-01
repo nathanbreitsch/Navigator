@@ -12,15 +12,12 @@ class cvxSolver:
         newRow = cvxSolver.makeZeros(len(m[0]))
 
         A = matrix(m).trans()
+        print bIn
         b = matrix(bIn)
         #b = matrix(cvxSolver.makeZeros(numRows))
         c = matrix(cvxSolver.makeZeros(numCols))
-        print m
-        print A
-        print b
-        print c
         sol=solvers.lp(c,A,b)
-        print "yo Brooklyn!!!!!!!!"
+        return sol
 
 
     @staticmethod
@@ -39,7 +36,7 @@ class cvxSolver:
         c = matrix([ 2.0, 1.0 ])
         print c
         sol=solvers.lp(c,A,b)
-        print "yo brooklyn!"
+
 
 cvxSolver.test()
 

@@ -9,13 +9,14 @@ class Word:
         self.feasible = "unknown"
         self.constraintMatrix = []
         self.constraintVector = []
+        self.map = []
 
     def toString(self):
         return ""
 
     def testFeasibility(self):
-        cvxSolver.solve(self.constraintMatrix, self.constraintVector)
-
+        result = cvxSolver.solve(self.constraintMatrix, self.constraintVector)
+        return (result['status']=='optimal')
 
     def testPrint(self):
         rtrnString = ""

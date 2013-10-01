@@ -1,6 +1,7 @@
-#from numpy import *
+import numpy as np
 from Word import *
 from Permutation import *
+import copy
 
 class System:
 
@@ -44,7 +45,7 @@ class System:
 
 
     def concat(self, w1, w2, intermediateFlip):
-        temp = Word()
+        temp = Word([])
         temp.sequence = []
         temp.sequence.extend(w1.sequence)
         temp.sequence.extend(w2.sequence)
@@ -53,7 +54,27 @@ class System:
         temp.flips.extend(w2.flips) #append flips of second piece
 
         #todo: compute constraints and map
+        map1 = np.matrix(w1.map)
+        map2 = np.matrix(w2.map)
+        constraintMat1 = np.matrix(w1.constraintMatrix)
+        constraintMat2 = np.matrix(w2.constraintMatrix)
 
+        preimage = constraintMat2 * map1
+        finalConstraintMat = copy.deepcopy(np.array(constraintMat1).tolist())
+        finalConstraintMat.extend(np.array(preimage).tolist())
+        print finalConstraintMat
+        finalConstraintVect = copy.deepcopy(w1.constraintVector)
+        finalConstraintVect.extend(w2.constraintVector)
+        temp.constraintMatrix = finalConstraintMat
+        temp.constraintVector = finalConstraintVect
+
+
+        #1: find map of first word
+        #2: compute preimage of dom(w2) (just multiply to right of constraint matrix)
+        #3: intersect with dom(w1) (just concat)
+
+        #map
+        temp.map = np.array(map2 * map1).tolist()
         return temp
 
 
@@ -73,15 +94,28 @@ class System:
             for i in range(3,5): #parameters
                 temp.append(0)
             return temp
-        permutation = [3,1,2,4,0]
-        p1 = Permutation(permutation)
-        print("trajectory for test case")
+        permutation1 = [3,1,2,4,0]
+        p1 = Permutation(permutation1)
+        permutation2 = [3,1,4,2,0]
+        p2 = Permutation(permutation2)
+        permutation3 = [3,1,2,0,4]
+        p3 = Permutation(permutation3)
+        print("trajectories for test case")
         print phi(p1)
+        print phi(p2)
         system = System(5, phi)
         w1 = system.word(p1)
+        w2 = system.word(p2)
+        w3 = system.word(p3)
         print("word constraints")
         print w1.testPrint()
-        w1.testFeasibility()
+        print w1.testFeasibility()
+        print w2.testPrint()
+        print w2.testFeasibility()
+        w3 = system.concat(w1,w3,"(4,0)")
+        print w3.constraintMatrix
+        print w3.testPrint()
+        print w3.testFeasibility()
 
     @staticmethod
     def makeZeros(n):
