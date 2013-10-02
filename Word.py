@@ -7,22 +7,19 @@ class Word:
         self.sequence = sequence
         self.flips = []
         self.feasible = "unknown"
-        self.constraintMatrix = []
-        self.constraintVector = []
+        self.set = []
         self.map = []
 
     def toString(self):
         return ""
 
     def testFeasibility(self):
-        result = cvxSolver.solve(self.constraintMatrix, self.constraintVector)
+        result = cvxSolver.solve(self.set)
         return (result['status']=='optimal')
 
     def testPrint(self):
-        rtrnString = ""
-        for i in range(0, len(self.constraintMatrix)):
-            rtrnString += "".join(str(e) + " + " for e in self.constraintMatrix[i]) + " >= " + "0" + "\n"
-        return rtrnString
+        return self.set.A
+        
 
 
 

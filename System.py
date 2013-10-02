@@ -1,6 +1,7 @@
 import numpy as np
 from Word import *
 from Permutation import *
+from ConvexGeometry import *
 import copy
 
 class System:
@@ -17,7 +18,7 @@ class System:
         temp = Word(sequence)
         #todo: compute constraints and map
         #just make map the identity
-        temp.map = identity(symbol.dim())
+        temp.map = AffineMap(identity(symbol.dim()), System.makeZeros(symbol.dim()))
         #next make the constraints
         constraintMatrix = []
         constraintVector = []
@@ -39,12 +40,16 @@ class System:
         newRow[symbol.dim()-1] = -1.0
         constraintMatrix.append(newRow)
         constraintVector.append(-1.0)
-        temp.constraintMatrix = constraintMatrix
-        temp.constraintVector = constraintVector
+        temp.set = ConvexSet(constraintMatrix, constraintVector)
         return temp
 
 
     def concat(self, w1, w2, intermediateFlip):
+
+        if intermediateFlip == "R":
+            #rotation case
+            print "rotation"
+
         temp = Word([])
         temp.sequence = []
         temp.sequence.extend(w1.sequence)
@@ -54,27 +59,9 @@ class System:
         temp.flips.extend(w2.flips) #append flips of second piece
 
         #todo: compute constraints and map
-        map1 = np.matrix(w1.map)
-        map2 = np.matrix(w2.map)
-        constraintMat1 = np.matrix(w1.constraintMatrix)
-        constraintMat2 = np.matrix(w2.constraintMatrix)
-
-        preimage = constraintMat2 * map1
-        finalConstraintMat = copy.deepcopy(np.array(constraintMat1).tolist())
-        finalConstraintMat.extend(np.array(preimage).tolist())
-        print finalConstraintMat
-        finalConstraintVect = copy.deepcopy(w1.constraintVector)
-        finalConstraintVect.extend(w2.constraintVector)
-        temp.constraintMatrix = finalConstraintMat
-        temp.constraintVector = finalConstraintVect
-
-
-        #1: find map of first word
-        #2: compute preimage of dom(w2) (just multiply to right of constraint matrix)
-        #3: intersect with dom(w1) (just concat)
-
-        #map
-        temp.map = np.array(map2 * map1).tolist()
+        temp.map = AffineMap.compose(w2.map,w2.map)
+        temp.set = ConvexSet.intersect(w1.set, ConvexGeometry.preImage(w1.map, w2.set))
+        print temp.map.A
         return temp
 
 
@@ -113,7 +100,6 @@ class System:
         print w2.testPrint()
         print w2.testFeasibility()
         w3 = system.concat(w1,w3,"(4,0)")
-        print w3.constraintMatrix
         print w3.testPrint()
         print w3.testFeasibility()
 

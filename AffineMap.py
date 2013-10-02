@@ -4,7 +4,10 @@ from numpy import *
 class AffineMap:
     def __init__(self,A,b):
         self.A = matrix(A)
-        self.b = transpose(matrix(b))
+        self.b = matrix(b)
+        if self.b.shape[0] != self.A.shape[0]:#its fucking counterintuitive, but shape[0] gives cols in A and rows in b
+            self.b = transpose(self.b)
+
 
     @staticmethod
     def compose(m1, m2):

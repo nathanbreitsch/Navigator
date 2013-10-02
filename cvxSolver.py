@@ -3,17 +3,10 @@ from cvxopt import matrix, solvers
 
 class cvxSolver:
     @staticmethod
-    def solve(m,bIn):
-        #build in circle constraints
-        numRows = len(m)
-        numCols = len(m[0])
-
-
-        newRow = cvxSolver.makeZeros(len(m[0]))
-
-        A = matrix(m).trans()
-        print bIn
-        b = matrix(bIn)
+    def solve(set):
+        numCols = set.A.shape[1]
+        A = matrix(set.A)
+        b = matrix(set.b)
         #b = matrix(cvxSolver.makeZeros(numRows))
         c = matrix(cvxSolver.makeZeros(numCols))
         sol=solvers.lp(c,A,b)
