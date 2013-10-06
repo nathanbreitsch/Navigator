@@ -7,7 +7,7 @@ class ConvexGeometry:
     def preImage(map,set):
         tempA = set.A * map.A
         tempb = set.b - set.A * map.b
-        return ConvexSet(tempA,tempb)
+        return ConvexSet(tempA, tempb)
 
     @staticmethod
     def test():

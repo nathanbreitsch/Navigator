@@ -11,6 +11,7 @@ class System:
         self.dim = dim
         self.phi = phi
 
+
     #make a one-symbol word from given symbol
     def word(self, symbol):
         sequence = []
@@ -44,23 +45,57 @@ class System:
         return temp
 
 
-    def concat(self, w1, w2, intermediateFlip):
+    def concat(self, w1, w2, intPerm):
 
-        if intermediateFlip == "R":
+        #todo compute intermediate map
+        phi = self.phi(w1.lastInSequence())
+        intermediateMatrix = []
+        intermediateVector = []
+        print "phi"
+        print phi
+
+        if intPerm == "R":
             #rotation case
             print "rotation"
+            for i in range(0, self.dim - 1):
+                speedRatio = phi[i]/phi[w1.lastInSequence().sigmaInv(self.dim-1)]
+                temp = System.makeZeros(self.dim)
+                temp[i] += 1
+                temp[w1.lastInSequence().sigmaInv(self.dim-1)] -= phi[i] * speedRatio
+                intermediateMatrix.append(temp)
+            intermediateMatrix.append(System.makeZeros(self.dim))
+            for i in range(0, self.dim):
+                intermediateVector.append(speedRatio)
+        else:
+            #transposition case
+            print "transposition"
+            for i in range(0, self.dim):
+                speedRatio = phi[i]/(phi[intPerm[1]] - phi[intPerm[0]])
+                print "speedRatio"
+                print speedRatio
+                temp = System.makeZeros(self.dim)
+                temp[i] += 1
+                temp[intPerm[0]] += phi[i] * speedRatio
+                temp[intPerm[1]] -= phi[i] * speedRatio
+                intermediateMatrix.append(temp)
+            intermediateVector = System.makeZeros(self.dim)
+            print intermediateMatrix
+
+        intermediateMap = AffineMap(intermediateMatrix, intermediateVector)
+
 
         temp = Word([])
         temp.sequence = []
         temp.sequence.extend(w1.sequence)
         temp.sequence.extend(w2.sequence)
         temp.flips.extend(w1.flips) #append flips of first piece
-        temp.flips.append(intermediateFlip) #for now, we know the middle flip
+        temp.flips.append(intPerm) #for now, we know the middle flip
         temp.flips.extend(w2.flips) #append flips of second piece
 
         #todo: compute constraints and map
-        temp.map = AffineMap.compose(w2.map,w2.map)
-        temp.set = ConvexSet.intersect(w1.set, ConvexGeometry.preImage(w1.map, w2.set))
+        temp.map = AffineMap.compose(intermediateMap,w1.map)
+        temp.set = ConvexSet.intersect(w1.set, ConvexGeometry.preImage(temp.map, w2.set))
+        temp.map = AffineMap.compose(w2.map, temp.map)
         print temp.map.A
         return temp
 
@@ -81,11 +116,11 @@ class System:
             for i in range(3,5): #parameters
                 temp.append(0)
             return temp
-        permutation1 = [3,1,2,4,0]
+        permutation1 = [1,3,2,4,0]
         p1 = Permutation(permutation1)
-        permutation2 = [3,1,4,2,0]
+        permutation2 = [1,3,4,2,0]
         p2 = Permutation(permutation2)
-        permutation3 = [3,1,2,0,4]
+        permutation3 = [1,3,2,0,4]
         p3 = Permutation(permutation3)
         print("trajectories for test case")
         print phi(p1)
@@ -97,9 +132,9 @@ class System:
         print("word constraints")
         print w1.testPrint()
         print w1.testFeasibility()
-        print w2.testPrint()
-        print w2.testFeasibility()
-        w3 = system.concat(w1,w3,"(4,0)")
+        print w3.testPrint()
+        print w3.testFeasibility()
+        w3 = system.concat(w3,w1,(4,0))
         print w3.testPrint()
         print w3.testFeasibility()
 

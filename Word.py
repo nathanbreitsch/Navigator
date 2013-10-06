@@ -19,6 +19,9 @@ class Word:
 
     def testPrint(self):
         return self.set.A
+
+    def lastInSequence(self):
+        return self.sequence[len(self.sequence)-1]
         
 
 
