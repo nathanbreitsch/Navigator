@@ -45,6 +45,26 @@ class Permutation:
             temp.append(p1[p2[i]])
         return Permutation(temp)
 
+    #return transposition of permutation
+    def transpose(self,transposition):
+        newPerm = copy.deepcopy(self.permutation)
+        if transposition == "R":
+            temp = newPerm[len(newPerm)-1]
+            for i in range(1, len(newPerm)):
+                newPerm[len(newPerm) - i] = newPerm[len(newPerm)-i-1]
+            newPerm[0] = temp
+        else:
+            a = transposition[0]
+            b = transposition[1]
+            temp = newPerm[a]
+            newPerm[a] = newPerm[b]
+            newPerm[b] = temp
+        return Permutation(newPerm)
+
+
+
+
+
     #construct swap permuation of given dimension
     @staticmethod
     def swap(dim, n1, n2):

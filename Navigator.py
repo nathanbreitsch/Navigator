@@ -4,11 +4,31 @@ from System import *
 class Navigator:
     def __init__(self, system):
         self.system = system
+        self.admissableTrannies = []
+        for i in range(0, system.dim - 1):
+            self.admissableTrannies.append([i, i+1])
+        self.admissableTrannies.append("R")
+        self.cutoff_length = 8
 
-    def doThatThingYouDo(self):
-        initialP = [3,1,2,0,4]
+    def navigate(self):
+        initialP = [0,1,3,2,4]
         p0 = Permutation(initialP)
-
+        gen1 = []
+        gen1.append(self.system.word(p0))
+        generations = []
+        generations.append(gen1)
+        for currentLength in range(2, self.cutoff_length):
+            currentList = generations[len(generations)-1]
+            nextList = []
+            for word in currentList:
+                for transposition in self.admissableTrannies:
+                    candidateWord = self.system.concat(word, self.system.word(word.lastInSequence().transpose(transposition)), transposition)
+                    if candidateWord.testFeasibility():
+                        nextList.append(candidateWord)
+            generations.append(nextList)
+        print "lengths:"
+        for i in range(0,len(generations)):
+            print "generation: " + str(i) + " ------ " + str(len(generations[i]))
 
 
     @staticmethod
@@ -29,6 +49,6 @@ class Navigator:
             return temp
         system = System(5, phi)
         navi = Navigator(system)
-        navi.doThatThingYouDo()
+        navi.navigate()
 
 Navigator.test()

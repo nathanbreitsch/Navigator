@@ -23,66 +23,77 @@ class System:
         #next make the constraints
         constraintMatrix = []
         constraintVector = []
-        for i in range(0, symbol.dim()-1):
+        for i in range(0, symbol.dim()-1): #cvxopt uses <= constraints by default
             newRow = System.makeZeros(symbol.dim())
-            newRow[symbol.sigma(i+1)] = 1.0
-            newRow[symbol.sigma(i)] = -1.0
+            newRow[symbol.sigma(i+1)] = -1.0
+            newRow[symbol.sigma(i)] = 1.0
             constraintMatrix.append(newRow)
             constraintVector.append(0.0)
         #for now, we are NOT going to use agents for 0 and 1 in lieu of 0 < x < 1 explicit constraint
         #actually, we can build these constraints into the solver
         #first cell greater than 0
         newRow = System.makeZeros(symbol.dim())
-        newRow[0] = 1.0
+        newRow[0] = -1.0
         constraintMatrix.append(newRow)
         constraintVector.append(0.0)
         #second cell less than 1
         newRow = System.makeZeros(symbol.dim())
-        newRow[symbol.dim()-1] = -1.0
+        newRow[symbol.dim()-1] = 1.0
         constraintMatrix.append(newRow)
-        constraintVector.append(-1.0)
+        constraintVector.append(1.0)
         temp.set = ConvexSet(constraintMatrix, constraintVector)
         return temp
 
 
     def concat(self, w1, w2, intPerm):
-
-        #todo compute intermediate map
+        #todo: handle case when things "passing" eachother travel the same speed
         phi = self.phi(w1.lastInSequence())
         intermediateMatrix = []
         intermediateVector = []
-        print "phi"
-        print phi
+        midTraj = w1.lastInSequence()
 
         if intPerm == "R":
             #rotation case
-            print "rotation"
+            speedDifferential = phi[midTraj.sigma(self.dim-1)]
+            if speedDifferential == 0:
+                #return with null feasibility
+                temp = Word([])
+                temp.sequence = []
+                temp.sequence.extend(w1.sequence)
+                temp.sequence.extend(w2.sequence)
+                return temp
             for i in range(0, self.dim - 1):
-                speedRatio = phi[i]/phi[w1.lastInSequence().sigmaInv(self.dim-1)]
+                speedRatio = phi[i]/phi[midTraj.sigma(self.dim-1)]
                 temp = System.makeZeros(self.dim)
                 temp[i] += 1
-                temp[w1.lastInSequence().sigmaInv(self.dim-1)] -= phi[i] * speedRatio
+                temp[midTraj.sigma(self.dim-1)] -= phi[i] * speedRatio
                 intermediateMatrix.append(temp)
             intermediateMatrix.append(System.makeZeros(self.dim))
             for i in range(0, self.dim):
                 intermediateVector.append(speedRatio)
         else:
             #transposition case
-            print "transposition"
+            speedDifferential = phi[midTraj.sigma(intPerm[1])] - phi[midTraj.sigma(intPerm[0])]
+            if speedDifferential == 0:
+                #return with null feasibility
+                temp = Word([])
+                temp.sequence = []
+                temp.sequence.extend(w1.sequence)
+                temp.sequence.extend(w2.sequence)
+                return temp
             for i in range(0, self.dim):
-                speedRatio = phi[i]/(phi[intPerm[1]] - phi[intPerm[0]])
-                print "speedRatio"
-                print speedRatio
+                speedDifferential = phi[midTraj.sigma(intPerm[1])] - phi[midTraj.sigma(intPerm[0])]
+                speedRatio = phi[i]/(speedDifferential)
                 temp = System.makeZeros(self.dim)
                 temp[i] += 1
-                temp[intPerm[0]] += phi[i] * speedRatio
-                temp[intPerm[1]] -= phi[i] * speedRatio
+                temp[midTraj.sigma(intPerm[0])] += speedRatio
+                temp[midTraj.sigma(intPerm[1])] -= speedRatio
                 intermediateMatrix.append(temp)
             intermediateVector = System.makeZeros(self.dim)
-            print intermediateMatrix
 
         intermediateMap = AffineMap(intermediateMatrix, intermediateVector)
-
+        print "intermediate Matrix"
+        print intermediateMap.A
 
         temp = Word([])
         temp.sequence = []
@@ -96,7 +107,6 @@ class System:
         temp.map = AffineMap.compose(intermediateMap,w1.map)
         temp.set = ConvexSet.intersect(w1.set, ConvexGeometry.preImage(temp.map, w2.set))
         temp.map = AffineMap.compose(w2.map, temp.map)
-        print temp.map.A
         return temp
 
 
@@ -112,6 +122,7 @@ class System:
                 if perm.sigmaInv(i) < perm.sigmaInv(4): #case: not in R
                     temp.append(1)
                 else: #case in R
+
                     temp.append(1-sIndex * (1.0/10.0))
             for i in range(3,5): #parameters
                 temp.append(0)
@@ -122,19 +133,11 @@ class System:
         p2 = Permutation(permutation2)
         permutation3 = [1,3,2,0,4]
         p3 = Permutation(permutation3)
-        print("trajectories for test case")
-        print phi(p1)
-        print phi(p2)
         system = System(5, phi)
         w1 = system.word(p1)
         w2 = system.word(p2)
         w3 = system.word(p3)
-        print("word constraints")
-        print w1.testPrint()
-        print w1.testFeasibility()
-        print w3.testPrint()
-        print w3.testFeasibility()
-        w3 = system.concat(w3,w1,(4,0))
+        w3 = system.concat(w3,w1,(3,4))
         print w3.testPrint()
         print w3.testFeasibility()
 

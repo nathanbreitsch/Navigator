@@ -14,11 +14,19 @@ class Word:
         return ""
 
     def testFeasibility(self):
-        result = cvxSolver.solve(self.set)
-        return (result['status']=='optimal')
+        if self.set == []:
+            return False
+        else:
+            result = cvxSolver.solve(self.set)
+            return (result['status']=='optimal')
 
     def testPrint(self):
-        return self.set.A
+        print "constraint A"
+        print self.set.A
+        print "constraint b"
+        print self.set.b
+        print "map A"
+        print self.map.A
 
     def lastInSequence(self):
         return self.sequence[len(self.sequence)-1]

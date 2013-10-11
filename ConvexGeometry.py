@@ -11,4 +11,4 @@ class ConvexGeometry:
 
     @staticmethod
     def test():
-        print "suck it!"
+        print "ys"
