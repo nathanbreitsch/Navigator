@@ -10,6 +10,7 @@ class cvxSolver:
         #b = matrix(cvxSolver.makeZeros(numRows))
         c = matrix(cvxSolver.makeZeros(numCols))
         sol=solvers.lp(c,A,b)
+        print "numberOfConstraints: " + str(len(A))
         return sol
 
 

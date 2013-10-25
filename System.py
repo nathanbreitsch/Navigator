@@ -10,6 +10,7 @@ class System:
     def __init__(self, dim, phi):
         self.dim = dim
         self.phi = phi
+        self.separationConstraint = System.makeSeparationConstraint(0.001)
 
 
     #make a one-symbol word from given symbol
@@ -42,6 +43,7 @@ class System:
         constraintMatrix.append(newRow)
         constraintVector.append(1.0)
         temp.set = ConvexSet(constraintMatrix, constraintVector)
+        temp.set = ConvexSet.intersect(temp.set, self.separationConstraint)
         return temp
 
 
@@ -54,7 +56,8 @@ class System:
 
         if intPerm == "R":
             #rotation case
-            speedDifferential = phi[midTraj.sigma(self.dim-1)]
+            criticalIndex = midTraj.sigma(self.dim-1)
+            speedDifferential = phi[criticalIndex]
             if speedDifferential == 0:
                 #return with null feasibility
                 temp = Word([])
@@ -62,19 +65,25 @@ class System:
                 temp.sequence.extend(w1.sequence)
                 temp.sequence.extend(w2.sequence)
                 return temp
-            for i in range(0, self.dim - 1):
-                speedRatio = phi[i]/phi[midTraj.sigma(self.dim-1)]
-                temp = System.makeZeros(self.dim)
-                temp[i] += 1
-                temp[midTraj.sigma(self.dim-1)] -= phi[i] * speedRatio
-                intermediateMatrix.append(temp)
-            intermediateMatrix.append(System.makeZeros(self.dim))
             for i in range(0, self.dim):
-                intermediateVector.append(speedRatio)
+                speedRatio = phi[i]/speedDifferential
+                temp = System.makeZeros(self.dim)
+                if i != criticalIndex:
+                    temp[i] += 1
+                    temp[criticalIndex] -= speedRatio
+                    intermediateMatrix.append(temp)
+                    intermediateVector.append(speedRatio)
+                else:
+                    intermediateMatrix.append(temp)
+                    intermediateVector.append(speedRatio-1)
+            print "intermediateMatrix"
+            print intermediateMatrix
+            print intermediateVector
+
         else:
             #transposition case
             speedDifferential = phi[midTraj.sigma(intPerm[1])] - phi[midTraj.sigma(intPerm[0])]
-            if speedDifferential == 0:
+            if speedDifferential >= 0:
                 #return with null feasibility
                 temp = Word([])
                 temp.sequence = []
@@ -92,8 +101,6 @@ class System:
             intermediateVector = System.makeZeros(self.dim)
 
         intermediateMap = AffineMap(intermediateMatrix, intermediateVector)
-        print "intermediate Matrix"
-        print intermediateMap.A
 
         temp = Word([])
         temp.sequence = []
@@ -138,7 +145,7 @@ class System:
         w2 = system.word(p2)
         w3 = system.word(p3)
         w3 = system.concat(w3,w1,(3,4))
-        print w3.testPrint()
+        #print w3.testPrint()
         print w3.testFeasibility()
 
     @staticmethod
@@ -147,6 +154,18 @@ class System:
         for i in range(0,n):
             temp.append(0.0)
         return temp
+
+    @staticmethod
+    def makeSeparationConstraint(epsilon):
+        #for now this is NOT agnostic to the cell cycle model.
+        #we should only separate the parameters.  Otherwise,
+        #nothting will ever happen
+        A1 = [[0,0,0,-1,0],[0,0,0,0,1],[0,0,0,1,-1]]
+        b1 = [-1 * epsilon, 1 - epsilon, -1 * epsilon]
+        constraint = ConvexSet(A1, b1)
+
+        return constraint
+
 
 
 

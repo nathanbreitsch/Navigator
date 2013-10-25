@@ -11,13 +11,20 @@ class Word:
         self.map = []
 
     def toString(self):
-        return ""
+        rtrn = ""
+        for p in self.flips:
+            rtrn += str(p)
+        return rtrn
 
     def testFeasibility(self):
         if self.set == []:
             return False
         else:
             result = cvxSolver.solve(self.set)
+            if (result['status'] == 'unknown'):
+                f = open("log", "a")
+                f.write(self.toString() + "\n")
+                f.close()
             return (result['status']=='optimal')
 
     def testPrint(self):

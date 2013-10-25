@@ -8,9 +8,12 @@ class Navigator:
         for i in range(0, system.dim - 1):
             self.admissableTrannies.append([i, i+1])
         self.admissableTrannies.append("R")
-        self.cutoff_length = 8
+        self.cutoff_length = 11
 
     def navigate(self):
+        numDoorsChecked = 0
+        numDoorsOpened = 0
+        numValid = 0
         initialP = [0,1,3,2,4]
         p0 = Permutation(initialP)
         gen1 = []
@@ -23,12 +26,21 @@ class Navigator:
             for word in currentList:
                 for transposition in self.admissableTrannies:
                     candidateWord = self.system.concat(word, self.system.word(word.lastInSequence().transpose(transposition)), transposition)
+                    numDoorsChecked += 1
+                    if candidateWord.set != []:
+                        numValid += 1
                     if candidateWord.testFeasibility():
                         nextList.append(candidateWord)
+                        numDoorsOpened += 1
             generations.append(nextList)
         print "lengths:"
         for i in range(0,len(generations)):
             print "generation: " + str(i) + " ------ " + str(len(generations[i]))
+        print "doors checked: " + str(numDoorsChecked)
+        print "doors opened: " + str(numDoorsOpened)
+        print "doors valid: " + str(numValid)
+        for word in generations[9]:
+            print word.toString()
 
 
     @staticmethod
