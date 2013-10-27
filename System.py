@@ -46,6 +46,8 @@ class System:
         temp.set = ConvexSet.intersect(temp.set, self.separationConstraint)
         return temp
 
+    def invariant(self, perm): #warning: not written generically
+        return perm.sigma(3) == 3 and perm.sigma(4) == 4
 
     def concat(self, w1, w2, intPerm):
         #todo: handle case when things "passing" eachother travel the same speed

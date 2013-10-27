@@ -1,5 +1,6 @@
 from numpy import *
 from cvxSolver import *
+from Permutation import *
 
 class Word:
     def __init__(self, sequence):
@@ -9,6 +10,12 @@ class Word:
         self.feasible = "unknown"
         self.set = []
         self.map = []
+
+    def dim(self):
+        if self.sequence == []:
+            return 0
+        else:
+            return self.sequence[0].dim()
 
     def toString(self):
         rtrn = ""
@@ -34,6 +41,15 @@ class Word:
         print self.set.b
         print "map A"
         print self.map.A
+
+    def netTransposition(self):
+        initial = self.sequence[0]
+        inverse = initial.inverse()
+        e = Permutation.identity(self.dim())
+        for flip in self.flips:
+            e.transpose(flip)
+        e = Permutation.compose(initial, Permutation.compose(e, inverse))
+        return e
 
     def lastInSequence(self):
         return self.sequence[len(self.sequence)-1]

@@ -8,6 +8,14 @@ class AffineMap:
         if self.b.shape[0] != self.A.shape[0]:#its fucking counterintuitive, but shape[0] gives cols in A and rows in b
             self.b = transpose(self.b)
 
+    def scale(self, scalar):
+        tempA = copy.deepcopy(self.A)
+        tempb = copy.deepcopy(self.b)
+        for i in range(0, len(A)):
+            for j in range(0, len(A[0])):
+                tempA[i,j] *= scalar
+        for i in range(0, len(b)):
+            tempb[i] *= scalar
 
     @staticmethod
     def compose(m1, m2):

@@ -1,4 +1,6 @@
-import copy
+from copy import deepcopy
+from AffineMap import *
+import System
 
 class Permutation:
     def __init__(self, perm):
@@ -27,6 +29,13 @@ class Permutation:
                 return i
         return -1
 
+    def inverse(self):
+        temp = []
+        for i in range(0, self.dim()):
+            temp.append(self.sigmaInv(i))
+        return Permutation(temp)
+
+
     #construct identity permutation
     @staticmethod
     def identity(dim):
@@ -46,8 +55,8 @@ class Permutation:
         return Permutation(temp)
 
     #return transposition of permutation
-    def transpose(self,transposition):
-        newPerm = copy.deepcopy(self.permutation)
+    def transpose(self, transposition):
+        newPerm = deepcopy(self.permutation)
         if transposition == "R":
             temp = newPerm[len(newPerm)-1]
             for i in range(1, len(newPerm)):
@@ -61,6 +70,19 @@ class Permutation:
             newPerm[b] = temp
         return Permutation(newPerm)
 
+    #return AffineMap representation of permutation
+    def mapRepresentation(self):
+        b = System.makeZeros(self.dim())
+        A = []
+        for i in range(0, self.dim()):
+            nextRow = []
+            for j in range(0, self.dim()):
+                if j == self.sigma(i):
+                    nextRow.append(1)
+                else:
+                    nextRow.append(0)
+            A.append(nextRow)
+        return AffineMap(A, b)
 
 
 

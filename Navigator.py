@@ -8,7 +8,7 @@ class Navigator:
         for i in range(0, system.dim - 1):
             self.admissableTrannies.append([i, i+1])
         self.admissableTrannies.append("R")
-        self.cutoff_length = 11
+        self.cutoff_length = 6
 
     def navigate(self):
         numDoorsChecked = 0
@@ -39,9 +39,36 @@ class Navigator:
         print "doors checked: " + str(numDoorsChecked)
         print "doors opened: " + str(numDoorsOpened)
         print "doors valid: " + str(numValid)
-        for word in generations[9]:
+        for word in generations[4]:
             print word.toString()
 
+        #look for periodic orbits
+        orbits = []
+        for list in generations:
+            for word in list:
+                if self.testPeriodic(word):
+                   orbits.append(word)
+        print "orbit length"
+        print len(orbits)
+
+    def testPeriodic(self, word):
+        #first decide whether the transpositions compose to an element of G
+        netTrans = word.netTransposition()
+        if not self.system.invariant(netTrans):
+            return False
+        #next compose the time map with the preserving permutation
+        Fmap = AffineMap.compose(netTrans.mapRepresentation(), word.map)
+        #construct the set of constraints for fixed point
+        A1 = sum(Fmap.A, (-1.0) * identity(self.system.dim))
+        A2 = sum((-1.0) * identity(self.system.dim), Fmap.A)
+        b2 = Fmap.b
+        b1 = (-1) * b2
+        A = A1.extend(A2)
+        b = b1.extend(b2)
+        FixedPoints = ConvexSet.intersect(ConvexSet(A, b), word.set())
+        #test feasiblility
+        solution = cvxSolver.solve(FixedPoints)
+        return (solution['status']=='optimal')
 
     @staticmethod
     def test():
