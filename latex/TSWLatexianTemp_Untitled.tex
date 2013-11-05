@@ -1,0 +1,111 @@
+
+
+\documentclass[11pt]{article}
+\usepackage{amsmath}
+\usepackage{epsfig}
+\usepackage{graphicx}
+\graphicspath{{../images/}}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{verbatim}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage[authoryear]{natbib}
+
+
+%\textwidth 15cm \textheight 20cm
+
+\addtolength{\oddsidemargin}{-.5in}
+\addtolength{\evensidemargin}{-.5in}
+\addtolength{\headheight}{-.5in}
+\addtolength{\textheight}{1.1in}
+\addtolength{\textwidth}{1.0in}
+
+
+\setlength{\parskip}{.2cm}
+\setlength{\parindent}{0cm}
+
+\renewcommand{\baselinestretch}{1.2}
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
+\renewcommand{\thefootnote}{\fnsymbol{footnote}}
+
+
+\numberwithin{equation}{section}
+
+
+%\theoremstyle{definition}
+\newtheorem{defn}{Definition}[section]
+\newtheorem{hyp}{Hyp.}
+\newtheorem{assm}{Assumption}
+
+%\theoremstyle{plain}
+\newtheorem{thm}[defn]{Theorem}
+\newtheorem{main}{Main Theorem}
+\newtheorem{cor}[defn]{Corollary}
+\newtheorem{lem}[defn]{Lemma}
+\newtheorem{prop}[defn]{Proposition}
+\newtheorem{conj}{Conjecture}
+
+%\theoremstyle{remark}
+\newtheorem{rem}[defn]{Remark}
+\newtheorem{ex}{Example}
+\newtheorem{oldthm}{ }
+\newtheorem{fact}{Fact}
+\newtheorem{ques}{Question}
+
+
+\newcommand{\D}[1]{{\mathbb#1}}% Doubled -Blackboard bold - caps only
+\newcommand{\NN}{{\D{N}}}
+\newcommand{\RR}{{\D{R}}}
+\newcommand{\CC}{{\D{C}}}
+\newcommand{\Rn}{{\D{R}^n}}
+\newcommand{\QQ}{{\D{Q}}}
+\newcommand{\TT}{{\D{T}}}
+\newcommand{\Ss}{{{\D(S)}^1}}
+\newcommand{\ZZ}{{\D{Z}}}
+
+
+
+
+\begin{document}
+
+\title{	Systems of Oscillators with Piecewise Constant Coupling}
+\author{Nathan Breitsch}
+\date{Today}
+\maketitle
+
+\section{Introduction: Dynamical Systems and Oscillators}
+
+\subsection
+A dynamical system is a useful framework for thinking about any object in the platonic universe.  This framework equips us with the following:
+-a way to represent all relevant attributes (collectively called the state) of the object
+-a rule for determining all future states from an initial state
+
+To make this idea more concrete, consider as an object a single body moving through space.  The state of the object may be captured by 
+six numbers: three to represent the body's position and three to represent the body's velocity.  Given an initial velocity, 
+
+
+
+(periodic orbit)
+If we know the state of a system at any initial time $t_0$, the rule for evolution allows us to determine uniquely the state of the system for all future times.  Sometimes 
+the state of a system comes back to its starting place.  When this happens, the object will continue its behavior between $t_0$ and $t_1$ repetitively forever.
+
+(define oscillator)
+An oscillator is any system which behaves repetitively.  The period $T$ of an oscillator is the amount time it takes to perform a single "lap."  At any time $t$, we 
+define the phase of the oscillator $\phi (t)$ to be the progress of the oscillator through the current cycle.
+
+find a good book and do all the fucking definitions from there.  Right now not worth your time.
+
+(examples and properties of oscillators)
+eventually get to phase reduction:
+
+$\frac{d \phi}{dt} = \omega$
+
+(coupling of oscillators)
+
+
+
+
+
+
+\end{document}
