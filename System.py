@@ -43,7 +43,8 @@ class System:
         constraintMatrix.append(newRow)
         constraintVector.append(1.0)
         temp.set = ConvexSet(constraintMatrix, constraintVector)
-        temp.set = ConvexSet.intersect(temp.set, self.separationConstraint)
+        #separationConstraints if you want them
+        #temp.set = ConvexSet.intersect(temp.set, self.separationConstraint)
         return temp
 
     def invariant(self, perm): #warning: not written generically
@@ -112,6 +113,17 @@ class System:
         temp.flips.append(intPerm) #for now, we know the middle flip
         temp.flips.extend(w2.flips) #append flips of second piece
 
+        #transform intPerm into static indexing
+        if intPerm == "R":
+            loggedEvent = "R"
+        else:
+            index1 = w1.sequence[-1].permutation[intPerm[0]]
+            index2 = w1.sequence[-1].permutation[intPerm[1]]
+            loggedEvent = [index1,index2]
+        temp.eventLog.extend(w1.eventLog)
+        temp.eventLog.append(loggedEvent)
+        temp.eventLog.extend(w2.eventLog)
+
         #todo: compute constraints and map
         temp.map = AffineMap.compose(intermediateMap,w1.map)
         temp.set = ConvexSet.intersect(w1.set, ConvexGeometry.preImage(temp.map, w2.set))
@@ -162,8 +174,12 @@ class System:
         #for now this is NOT agnostic to the cell cycle model.
         #we should only separate the parameters.  Otherwise,
         #nothting will ever happen
-        A1 = [[0,0,0,-1,0],[0,0,0,0,1],[0,0,0,1,-1]]
-        b1 = [-1 * epsilon, 1 - epsilon, -1 * epsilon]
+        #A1 = [[0,0,0,-1,0],[0,0,0,0,1],[0,0,0,1,-1]]
+        #b1 = [-1 * epsilon, 1 - epsilon, -1 * epsilon]
+
+        #monday monday monday, nathan adds a specific value constraint to r and s to narrow shit down
+        A1 = [[0,0,0,-1,0],[0,0,0,0,1],[0,0,0,1,-1],[0,0,0,1,0],[0,0,0,0,1]]
+        b1 = [-1 * epsilon, 1 - epsilon, -1 * epsilon, 0.2, 0.8]
         constraint = ConvexSet(A1, b1)
 
         return constraint

@@ -1,5 +1,9 @@
 __author__ = 'NathanBreitsch'
 from System import *
+#from ConvexSet import ConvexSet
+import random
+import numpy
+
 
 class Navigator:
     def __init__(self, system):
@@ -8,16 +12,25 @@ class Navigator:
         for i in range(0, system.dim - 1):
             self.admissableTrannies.append([i, i+1])
         self.admissableTrannies.append("R")
-        self.cutoff_length = 6
+        self.cutoff_length = 8
+        self.wordsGenerated = []
 
     def navigate(self):
         numDoorsChecked = 0
         numDoorsOpened = 0
         numValid = 0
-        initialP = [0,1,3,2,4]
-        p0 = Permutation(initialP)
+        #initialP = [0,1,3,2,4]
+        #p00 = Permutation(initialP)
+
+        #generate representatives of each symmetry class
         gen1 = []
-        gen1.append(self.system.word(p0))
+        for i in range(1,4):
+            for j in range(i+1,5):
+                temp = [0,3,4]
+                temp.insert(i,1)
+                temp.insert(j,2)
+                gen1.append(self.system.word(Permutation(temp)))
+        #gen1.append(self.system.word(p00))
         generations = []
         generations.append(gen1)
         for currentLength in range(2, self.cutoff_length):
@@ -31,6 +44,7 @@ class Navigator:
                         numValid += 1
                     if candidateWord.testFeasibility():
                         nextList.append(candidateWord)
+                        self.wordsGenerated.append(candidateWord)
                         numDoorsOpened += 1
             generations.append(nextList)
         print "lengths:"
@@ -43,13 +57,38 @@ class Navigator:
             print word.toString()
 
         #look for periodic orbits
+        total  = 0
         orbits = []
         for list in generations:
             for word in list:
-                if self.testPeriodic(word):
+                word.sendToCloud()
+                total += 1
+                if self.testStrictPeriodic(word):
                    orbits.append(word)
-        print "orbit length"
+        print "# periodic orbit"
         print len(orbits)
+        print "out of"
+        print total
+
+    def testStrictPeriodic(self, word):
+        #first decide whether the transpositions compose to identity
+        netTrans = word.netTransposition()
+        if not netTrans.isIdentity():
+            return False
+        #next, obtain the full poincare map
+        Fmap = word.map
+        #construct the set of constraints for fixed point
+        A1 = add(Fmap.A, -1.0 * AffineMap.identity(self.system.dim).A)
+        A2 = add(AffineMap.identity(self.system.dim).A, -1 * Fmap.A)
+        b2 = Fmap.b
+        b1 = -1.0 * b2
+        A = concatenate((A1, A2))
+        b = concatenate((b1, b2))
+        cs = ConvexSet(A, b)
+        FixedPoints = cs.intersect(cs, word.set())
+        #test feasibility
+        solution = cvxSolver.solve(FixedPoints)
+        return (solution['status']=='optimal')
 
     def testPeriodic(self, word):
         #first decide whether the transpositions compose to an element of G
@@ -59,14 +98,15 @@ class Navigator:
         #next compose the time map with the preserving permutation
         Fmap = AffineMap.compose(netTrans.mapRepresentation(), word.map)
         #construct the set of constraints for fixed point
-        A1 = sum(Fmap.A, (-1.0) * identity(self.system.dim))
-        A2 = sum((-1.0) * identity(self.system.dim), Fmap.A)
+        A1 = add(Fmap.A, -1.0 * AffineMap.identity(self.system.dim).A)
+        A2 = add(AffineMap.identity(self.system.dim).A, -1 * Fmap.A)
         b2 = Fmap.b
-        b1 = (-1) * b2
-        A = A1.extend(A2)
-        b = b1.extend(b2)
-        FixedPoints = ConvexSet.intersect(ConvexSet(A, b), word.set())
-        #test feasiblility
+        b1 = -1.0 * b2
+        A = concatenate((A1,A2))
+        b = concatenate((b1,b2))
+        cs = ConvexSet(A,b)
+        FixedPoints = cs.intersect(cs, word.set())
+        #test feasibility
         solution = cvxSolver.solve(FixedPoints)
         return (solution['status']=='optimal')
 

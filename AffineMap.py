@@ -17,6 +17,11 @@ class AffineMap:
         for i in range(0, len(b)):
             tempb[i] *= scalar
 
+    def serialize(self):
+        representation = {}
+        representation["A"] = self.A.tolist()
+        representation["b"] = self.b.tolist()
+
     @staticmethod
     def compose(m1, m2):
         tempA = m1.A * m2.A

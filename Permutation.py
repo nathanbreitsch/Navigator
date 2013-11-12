@@ -1,6 +1,6 @@
 from copy import deepcopy
 from AffineMap import *
-import System
+
 
 class Permutation:
     def __init__(self, perm):
@@ -72,7 +72,7 @@ class Permutation:
 
     #return AffineMap representation of permutation
     def mapRepresentation(self):
-        b = System.makeZeros(self.dim())
+        b = Permutation.makeZeros(self.dim())
         A = []
         for i in range(0, self.dim()):
             nextRow = []
@@ -84,8 +84,15 @@ class Permutation:
             A.append(nextRow)
         return AffineMap(A, b)
 
+    def serialize(self):
+        return self.permutation
 
 
+    def isIdentity(self):
+        for i in range(1, self.dim()):
+            if self.permutation[i] != self.permutation[i-1] + 1:
+                return False
+        return True
 
     #construct swap permuation of given dimension
     @staticmethod
@@ -104,6 +111,13 @@ class Permutation:
         print swap1.permutation
         print swap2.permutation
         print swap3.permutation
+
+    @staticmethod
+    def makeZeros(n):
+        temp = []
+        for i in range(0,n):
+            temp.append(0.0)
+        return temp
 
 
 Permutation.test()

@@ -1,5 +1,5 @@
 __author__ = 'NathanBreitsch'
-from AffineMap import *
+
 from ConvexSet import *
 
 class ConvexGeometry:
