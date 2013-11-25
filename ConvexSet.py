@@ -28,8 +28,30 @@ class ConvexSet:
         representation["A"] = self.A.tolist()
         representation["b"] = self.b.tolist()
 
-    def standardCrossSection(self, c):
-        assert(len(c) == len(self.A[0]))
+    #returns representation of crosssection (certain variables are fixed)
+    #@param values: value at which to fix each variable, '?' if not projected
+    def standardCrossSection(self, values):
+        AxSection = self.A[:, [index for index in range(0, len(values)) if values[index] == '?']]
+        bxSection = self.b - sum(values[index] * self.A[:, index] for index in range(0, len(values)) if values[index]!='?')
+        return ConvexSet(AxSection, bxSection)
+
+    def toIneFile(self):
+        numRows = len(self.A)
+        numCols = len(self.A[0]) + 1
+        parameters = numRows + " " + numCols + " rational"
+        inequalities = ""
+        for i in range(0, numRows):
+            rowString = ""
+            for j in range(0, numCols):
+                rowString += str(self.A[i][j]) + " "
+            rowString += str(self.b[i])
+            inequalities += rowString + "\n"
+
+
+        contents = "name\nH-representation\nbegin\n" + parameters + "\n" + inequalities + "end"
+        #f = open("./data/", "w")
+        #f.write(contents)
+        #f.close()
 
     @staticmethod
     def intersect(cs1, cs2):
@@ -39,6 +61,7 @@ class ConvexSet:
         #temp.A = tempA
         #temp.b = tempb
         return temp
+
 
 
 

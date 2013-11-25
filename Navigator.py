@@ -61,7 +61,7 @@ class Navigator:
         orbits = []
         for list in generations:
             for word in list:
-                word.sendToCloud()
+                #word.sendToCloud()
                 total += 1
                 if self.testStrictPeriodic(word):
                    orbits.append(word)

@@ -12,21 +12,27 @@ class LocalReportBuilder:
         for word in self.words:
             if word.isFPrimitive():
                 #cross section computation
-                crossSectionConstraints = LocalReportBuilder.makeCrossSectionConstraints()
-                tempSet = ConvexSet.intersect(crossSectionConstraints, word.set)
-                solution = cvxSolver.solve(tempSet)
+
+                #old logic
+                #crossSectionConstraints = LocalReportBuilder.makeCrossSectionConstraints()
+                #tempSet = ConvexSet.intersect(crossSectionConstraints, word.set)
+
+                #new logic
+                crossSection = word.set.standardCrossSection([0,'?','?',.2,.8])
+
+                solution = cvxSolver.solve(crossSection)
                 if solution["status"] == "optimal":
                     #somehow compute vertices of the set in 2d
                     #vertices = LocalReportBuilder.computeVertices(tempSet)
                     temp = {}
-                    temp["tempSet"] = tempSet
+                    temp["crossSection"] = crossSection
                     temp["eventLog"] = word.eventLog
                     temp["initialP"] = word.sequence[0].permutation
                     crossSections.append(temp)
         print ("Report on F map regions")
         print len(crossSections)
         for piece in crossSections:
-            print piece["initialP "]
+            print piece["initialP"]
             print piece["eventLog"]
 
     @staticmethod
