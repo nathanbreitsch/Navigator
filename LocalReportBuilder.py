@@ -2,12 +2,17 @@ from Navigator import Navigator
 from ConvexSet import ConvexSet
 from cvxSolver import cvxSolver
 from System import System
+import json
 
 class LocalReportBuilder:
     def __init__(self, words):
         self.words = words
 
     def makeReport(self):
+
+        dict = {}
+        dict["regions"] = []
+
         crossSections = []
         for word in self.words:
             if word.isFPrimitive():
@@ -18,12 +23,29 @@ class LocalReportBuilder:
                 #tempSet = ConvexSet.intersect(crossSectionConstraints, word.set)
 
                 #new logic
-                crossSection = word.set.standardCrossSection([0,'?','?',.2,.8])
+                crossSection = word.set.standardCrossSection([0,'?','?',.4,.6])
+
 
                 solution = cvxSolver.solve(crossSection)
                 if solution["status"] == "optimal":
                     #somehow compute vertices of the set in 2d
                     #vertices = LocalReportBuilder.computeVertices(tempSet)
+                    cxName = ""
+                    for event in word.eventLog:
+                        cxName += str(event)
+                    cxName = cxName.replace(" ", "")
+                    cxName = cxName.replace("/", "")
+                    cxName = cxName.replace("[", "")
+                    cxName = cxName.replace("]", "")
+                    cxName = cxName.replace(",", "")
+                    cxName = cxName.replace("'", "")
+
+
+                    crossSection.writeIne(cxName, "./data/" + cxName + ".ine")
+                    crossSection.writeVertices("./data/" + cxName + ".ver")
+                    dict["regions"].append(crossSection.getDict())
+                    print "vertices: "
+                    print crossSection.getVertices()
                     temp = {}
                     temp["crossSection"] = crossSection
                     temp["eventLog"] = word.eventLog
@@ -34,6 +56,11 @@ class LocalReportBuilder:
         for piece in crossSections:
             print piece["initialP"]
             print piece["eventLog"]
+
+        f = open("./data/fMap.json", "w")
+        f.write(json.dumps(dict))
+        f.close()
+
 
     @staticmethod
     def main():

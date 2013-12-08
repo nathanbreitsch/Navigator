@@ -12,7 +12,7 @@ class Navigator:
         for i in range(0, system.dim - 1):
             self.admissableTrannies.append([i, i+1])
         self.admissableTrannies.append("R")
-        self.cutoff_length = 8
+        self.cutoff_length = 10
         self.wordsGenerated = []
 
     def navigate(self):

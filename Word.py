@@ -6,12 +6,20 @@ from pymongo import MongoClient
 class Word:
     def __init__(self, sequence):
         #seqence of permutations
+        #todo fix this bad practice of setting things to [] initially
+        #todo: figure out how to do code completion in for instance variables
         self.sequence = sequence
         self.flips = []
         self.feasible = "unknown"
         self.set = []
         self.map = []
         self.eventLog = []
+
+    def eventLogString(self):
+        logString = ""
+        for event in eventLog:
+            logString += str(event)
+        return logString
 
     def dim(self):
         if self.sequence == []:
@@ -89,6 +97,13 @@ class Word:
             if self.flips[i] == "R":
                 return False
         return True
+
+    #def writeToIneFile(self, filename):
+    #    name = self.eventLogString()
+    #    contents = self.set.ineRepresentation()
+    #    f = open(filename, "w")
+    #    f.write(name + "\n" + contents)
+    #    f.close()
 
 
     #upload relevant data about the word to the cloud
