@@ -1,6 +1,6 @@
 __author__ = 'NathanBreitsch'
 
-from ConvexSet import *
+from ConvexSet import ConvexSet
 
 class ConvexGeometry:
     @staticmethod

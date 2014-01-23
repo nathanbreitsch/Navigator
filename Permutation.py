@@ -20,10 +20,14 @@ class Permutation:
     def dim(self):
         return len(self.permutation)
 
-    def sigma(self, index):
+    #what goes to position index under the permutation?
+    #converts order into innate
+    def sigmaInv(self, index):
         return(self.permutation[index])
 
-    def sigmaInv(self,index):
+    #where does index go under the permutation
+    #converts innate into order
+    def sigma(self,index):
         for i in range(0, self.dim()):
             if self.permutation[i] == index:
                 return i

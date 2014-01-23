@@ -3,6 +3,8 @@ from numpy import *
 
 class AffineMap:
     def __init__(self,A,b):
+
+
         self.A = matrix(A)
         self.b = matrix(b)
         if self.b.shape[0] != self.A.shape[0]:#its fucking counterintuitive, but shape[0] gives cols in A and rows in b
@@ -24,6 +26,8 @@ class AffineMap:
 
     @staticmethod
     def compose(m1, m2):
+        #print m1.A
+        #print m2.A
         tempA = m1.A * m2.A
         tempb = m1.A*m2.b + m1.b
         return AffineMap(tempA, tempb)

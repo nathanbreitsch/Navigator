@@ -2,6 +2,8 @@ from numpy import *
 from cvxSolver import *
 from Permutation import *
 from pymongo import MongoClient
+from AffineMap import AffineMap
+from ConvexSet import ConvexSet
 
 class Word:
     def __init__(self, sequence):
@@ -11,13 +13,13 @@ class Word:
         self.sequence = sequence
         self.flips = []
         self.feasible = "unknown"
-        self.set = []
-        self.map = []
+        self.set = "unspecified"
+        self.map = "unspecified"
         self.eventLog = []
 
     def eventLogString(self):
         logString = ""
-        for event in eventLog:
+        for event in self.eventLog:
             logString += str(event)
         return logString
 
@@ -88,6 +90,7 @@ class Word:
         newObject.map = AffineMap(representation["map"]["A"], representation["set"]["b"])
         newObject.set = matrix(representation["set"]["A"],representation["set"]["b"])
 
+    #returns true iff the block word represents a single F map (single rotation event)
     def isFPrimitive(self):
         #only F map
         if self.flips[-1] != "R":

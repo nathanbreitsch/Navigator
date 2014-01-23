@@ -15,7 +15,10 @@ class LocalReportBuilder:
 
         crossSections = []
         for word in self.words:
-            if word.isFPrimitive():
+
+            if word.flips == ['R']:
+            #if word.isFPrimitive():
+                #print word.flips
                 #cross section computation
 
                 #old logic
@@ -57,7 +60,8 @@ class LocalReportBuilder:
             print piece["initialP"]
             print piece["eventLog"]
 
-        f = open("./data/fMap.json", "w")
+        f = open("data/fMap.js", "w")
+        f.write("jsonObject = ")
         f.write(json.dumps(dict))
         f.close()
 

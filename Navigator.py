@@ -1,6 +1,10 @@
 __author__ = 'NathanBreitsch'
-from System import *
-#from ConvexSet import ConvexSet
+from System import System
+from ConvexSet import ConvexSet
+from Permutation import Permutation
+from AffineMap import AffineMap
+from numpy import add, concatenate
+from cvxSolver import cvxSolver
 import random
 import numpy
 
@@ -8,67 +12,33 @@ import numpy
 class Navigator:
     def __init__(self, system):
         self.system = system
-        self.admissableTrannies = []
-        for i in range(0, system.dim - 1):
-            self.admissableTrannies.append([i, i+1])
-        self.admissableTrannies.append("R")
-        self.cutoff_length = 10
+        self.cutoff_length = 5
         self.wordsGenerated = []
 
     def navigate(self):
-        numDoorsChecked = 0
-        numDoorsOpened = 0
-        numValid = 0
-        #initialP = [0,1,3,2,4]
-        #p00 = Permutation(initialP)
 
-        #generate representatives of each symmetry class
+
+        #generate representatives of each symmetry class (currently not gen purpose)
         gen1 = []
         for i in range(1,4):
-            for j in range(i+1,5):
+            for j in range(i+1, 5):
                 temp = [0,3,4]
                 temp.insert(i,1)
                 temp.insert(j,2)
                 gen1.append(self.system.word(Permutation(temp)))
-        #gen1.append(self.system.word(p00))
         generations = []
         generations.append(gen1)
         for currentLength in range(2, self.cutoff_length):
-            currentList = generations[len(generations)-1]
+            currentList = generations[-1]
             nextList = []
             for word in currentList:
-                for transposition in self.admissableTrannies:
-                    candidateWord = self.system.concat(word, self.system.word(word.lastInSequence().transpose(transposition)), transposition)
-                    numDoorsChecked += 1
-                    if candidateWord.set != []:
-                        numValid += 1
+                for transposition in self.system.admissibleTranspositions(word.lastInSequence()):
+                    candidateWord = self.system.concat(word,  transposition)
                     if candidateWord.testFeasibility():
                         nextList.append(candidateWord)
                         self.wordsGenerated.append(candidateWord)
-                        numDoorsOpened += 1
             generations.append(nextList)
-        print "lengths:"
-        for i in range(0,len(generations)):
-            print "generation: " + str(i) + " ------ " + str(len(generations[i]))
-        print "doors checked: " + str(numDoorsChecked)
-        print "doors opened: " + str(numDoorsOpened)
-        print "doors valid: " + str(numValid)
-        for word in generations[4]:
-            print word.toString()
 
-        #look for periodic orbits
-        total  = 0
-        orbits = []
-        for list in generations:
-            for word in list:
-                #word.sendToCloud()
-                total += 1
-                if self.testStrictPeriodic(word):
-                   orbits.append(word)
-        print "# periodic orbit"
-        print len(orbits)
-        print "out of"
-        print total
 
     def testStrictPeriodic(self, word):
         #first decide whether the transpositions compose to identity

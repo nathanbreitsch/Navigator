@@ -3,12 +3,14 @@ from cvxopt import matrix
 import numpy as np
 from rationalApprox import simpleApprox, intApprox
 import cdd
-import System
 
 
 
 class ConvexSet:
-    def __init__(self,A,b):
+    def __init__(self,A ,b ):
+
+
+
         self.A = np.matrix(A)
         self.b = np.matrix(b)
         if self.b.shape[0] != self.A.shape[0]:#its counterintuitive, but shape[0] gives cols in A and rows in b
@@ -78,9 +80,9 @@ class ConvexSet:
         unboundConstraints = ConvexSet(AxSection, bxSection)
         numCols = AxSection.shape[1]
         #bound values between zero and one
-        boundConstraints = ConvexSet.intersect(unboundConstraints, ConvexSet.makeSquareConstraints(numCols))
-
-        return boundConstraints
+        #boundConstraints = ConvexSet.intersect(unboundConstraints, ConvexSet.makeSquareConstraints(numCols))
+        return unboundConstraints
+        #return boundConstraints
 
     def ineRepresentation(self):
         numRows = self.A.shape[0]
@@ -124,7 +126,21 @@ class ConvexSet:
         #temp.b = tempb
         return temp
 
-print ConvexSet.makeSquareConstraints(3).A.tolist()
-print ConvexSet.makeSquareConstraints(3).b.tolist()
-print ConvexSet.makeSquareConstraints(3).getVertices()
+    @staticmethod
+    def testStandardCrossSection():
+        #we start with a unit square
+        A = [[0,-1],[0,1],[-1,0],[1,0]]
+        b = [0,1,0,1]
+        set = ConvexSet(A,b)
+        #we take a horizontal cross section at y = 1/2
+        selection = ['?',0.5]
+        crossSection = set.standardCrossSection(selection)
+        print crossSection.A
+        print crossSection.b
 
+
+#print ConvexSet.makeSquareConstraints(3).A.tolist()
+#print ConvexSet.makeSquareConstraints(3).b.tolist()
+#print ConvexSet.makeSquareConstraints(3).getVertices()
+
+ConvexSet.testStandardCrossSection()
