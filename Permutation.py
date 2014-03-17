@@ -6,6 +6,7 @@ class Permutation:
     def __init__(self, perm):
         self.permutation = perm
 
+
     #return list of adjacent permutations
     def getAdjacent(self):
         adjacentList = []

@@ -11,6 +11,7 @@ import copy
 #all constraints of the form Ax <= b
 #all constraints use innate coordinates
 #all maps use innate coordinates
+#all intermediate permutations (transpositions) use order coordinates
 
 class System:
 
@@ -67,7 +68,7 @@ class System:
 
         if intPerm == "R":
             #rotation case
-            criticalIndex = midTraj.sigma(self.dim-1)
+            criticalIndex = midTraj.sigmaInv(self.dim-1)
             speedDifferential = phi[criticalIndex]
             if speedDifferential == 0:
                 #return with null feasibility
@@ -93,7 +94,7 @@ class System:
 
         else:
             #transposition case
-            speedDifferential = phi[midTraj.sigma(intPerm[1])] - phi[midTraj.sigma(intPerm[0])]
+            speedDifferential = phi[midTraj.sigmaInv(intPerm[1])] - phi[midTraj.sigmaInv(intPerm[0])]
             if speedDifferential >= 0:
                 #return with null feasibility
                 temp = Word([])
@@ -102,12 +103,12 @@ class System:
                 temp.sequence.extend(w2.sequence)
                 return temp
             for i in range(0, self.dim):
-                speedDifferential = phi[midTraj.sigma(intPerm[1])] - phi[midTraj.sigma(intPerm[0])]
+                speedDifferential = phi[midTraj.sigmaInv(intPerm[1])] - phi[midTraj.sigmaInv(intPerm[0])]
                 speedRatio = phi[i]/(speedDifferential)
                 temp = System.makeZeros(self.dim)
                 temp[i] += 1
-                temp[midTraj.sigma(intPerm[0])] += speedRatio
-                temp[midTraj.sigma(intPerm[1])] -= speedRatio
+                temp[midTraj.sigmaInv(intPerm[0])] += speedRatio
+                temp[midTraj.sigmaInv(intPerm[1])] -= speedRatio
                 intermediateMatrix.append(temp)
             intermediateVector = System.makeZeros(self.dim)
 

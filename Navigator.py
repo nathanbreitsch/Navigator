@@ -81,7 +81,7 @@ class Navigator:
         solution = cvxSolver.solve(FixedPoints)
         return (solution['status']=='optimal')
 
-    def makeDB(self, name):
+    #def makeDB(self, name):
 
 
     @staticmethod
@@ -89,11 +89,11 @@ class Navigator:
         def phi(perm):
             #let 3 ~ s, 4 ~ r
 
-            sIndex = perm.sigmaInv(3)
+            sIndex = perm.sigma(3)
 
             temp = []
             for i in range(0,3):
-                if perm.sigmaInv(i) < perm.sigmaInv(4): #case: not in R
+                if perm.sigma(i) < perm.sigma(4): #case: not in R
                     temp.append(1)
                 else: #case in R
                     temp.append(1-sIndex * (1.0/10.0))
