@@ -5,6 +5,7 @@ from Permutation import Permutation
 from AffineMap import AffineMap
 from numpy import add, concatenate
 from cvxSolver import cvxSolver
+import pymongo
 import random
 import numpy
 
@@ -12,7 +13,7 @@ import numpy
 class Navigator:
     def __init__(self, system):
         self.system = system
-        self.cutoff_length = 5
+        self.cutoff_length = 10
         self.wordsGenerated = []
 
     def navigate(self):
@@ -79,6 +80,9 @@ class Navigator:
         #test feasibility
         solution = cvxSolver.solve(FixedPoints)
         return (solution['status']=='optimal')
+
+    def makeDB(self, name):
+
 
     @staticmethod
     def test():

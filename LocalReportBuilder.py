@@ -5,10 +5,28 @@ from System import System
 import json
 
 class LocalReportBuilder:
-    def __init__(self, words):
-        self.words = words
+    def __init__(self):
+        print("i am bad at oo arch")
 
     def makeReport(self):
+        def phi(perm):
+            #let 3 ~ s, 4 ~ r
+
+            sIndex = perm.sigmaInv(3)
+
+            temp = []
+            for i in range(0,3):
+                if perm.sigmaInv(i) < perm.sigmaInv(4): #case: not in R
+                    temp.append(1)
+                else: #case in R
+                    temp.append(1-sIndex * (0.0/10.0))
+            for i in range(3,5): #parameters
+                temp.append(0)
+            return temp
+        system = System(5, phi)
+        navi = Navigator(system)
+        navi.navigate()
+        self.words = navi.wordsGenerated
 
         dict = {}
         dict["regions"] = []
@@ -16,8 +34,9 @@ class LocalReportBuilder:
         crossSections = []
         for word in self.words:
 
-            if word.flips == ['R']:
-            #if word.isFPrimitive():
+            #if len(word.flips) == 6:
+            #if navi.testPeriodic(word):
+            if word.isFPrimitive():
                 #print word.flips
                 #cross section computation
 
@@ -27,14 +46,14 @@ class LocalReportBuilder:
 
                 #new logic
                 crossSection = word.set.standardCrossSection([0,'?','?',.4,.6])
-
+                #crossSection = word.set.standardCrossSection([0,0.25,0.75,'?','?'])
 
                 solution = cvxSolver.solve(crossSection)
                 if solution["status"] == "optimal":
                     #somehow compute vertices of the set in 2d
                     #vertices = LocalReportBuilder.computeVertices(tempSet)
                     cxName = ""
-                    for event in word.eventLog:
+                    for event in word.flips:
                         cxName += str(event)
                     cxName = cxName.replace(" ", "")
                     cxName = cxName.replace("/", "")
@@ -44,9 +63,9 @@ class LocalReportBuilder:
                     cxName = cxName.replace("'", "")
 
 
-                    crossSection.writeIne(cxName, "./data/" + cxName + ".ine")
-                    crossSection.writeVertices("./data/" + cxName + ".ver")
-                    dict["regions"].append(crossSection.getDict())
+                    #crossSection.writeIne(cxName, "./data/" + cxName + ".ine")
+                    #crossSection.writeVertices("./data/" + cxName + ".ver")
+                    dict["regions"].append(crossSection.getDict(cxName))
                     print "vertices: "
                     print crossSection.getVertices()
                     temp = {}
@@ -68,24 +87,7 @@ class LocalReportBuilder:
 
     @staticmethod
     def main():
-        def phi(perm):
-            #let 3 ~ s, 4 ~ r
-
-            sIndex = perm.sigmaInv(3)
-
-            temp = []
-            for i in range(0,3):
-                if perm.sigmaInv(i) < perm.sigmaInv(4): #case: not in R
-                    temp.append(1)
-                else: #case in R
-                    temp.append(1-sIndex * (1.0/10.0))
-            for i in range(3,5): #parameters
-                temp.append(0)
-            return temp
-        system = System(5, phi)
-        navi = Navigator(system)
-        navi.navigate()
-        reportBuilder = LocalReportBuilder(navi.wordsGenerated)
+        reportBuilder = LocalReportBuilder()
         reportBuilder.makeReport()
 
     @staticmethod

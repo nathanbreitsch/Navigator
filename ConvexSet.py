@@ -59,7 +59,7 @@ class ConvexSet:
         f.close()
 
     #return dictionary representing the object
-    def getDict(self):
+    def getDict(self, info):
         stringForm = str(self.getVertices())
         vector = stringForm.split("\n")
         matrix = []
@@ -69,7 +69,7 @@ class ConvexSet:
             line = line.replace("  ", " ")
             array = line.split(" ")[2:]
             matrix.append(array)
-        dict = {"points": matrix}
+        dict = {"points": matrix, "info": info}
         return dict
 
     #returns representation of crosssection (certain variables are fixed)
