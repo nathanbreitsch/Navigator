@@ -90,7 +90,13 @@ class Permutation:
         return AffineMap(A, b)
 
     def serialize(self):
-        return self.permutation
+        rep = {}
+        rep["permutation"] = self.permutation
+        return rep
+
+    @staticmethod
+    def deserialize(rep):
+        return Permutation(rep["permutation"])
 
 
     def isIdentity(self):
@@ -125,4 +131,4 @@ class Permutation:
         return temp
 
 
-Permutation.test()
+#Permutation.test()

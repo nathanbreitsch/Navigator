@@ -27,13 +27,19 @@ class ConvexSet:
         #temp.A = tempA
         #temp.b = tempb
         return temp
-
+    #return dictionary representation of the set
     def serialize(self):
         representation = {}
         representation["A"] = self.A.tolist()
         representation["b"] = self.b.tolist()
+        return representation
 
-    #pycddlib wants the form (b,-A) for some fucked up reason
+    #given dictionary representation, returns map
+    @staticmethod
+    def deserialize(rep):
+        return ConvexSet(rep["A"], rep["b"])
+
+    #pycddlib wants the form (b,-A) for some reason
     def getVertices(self):
         tableau = np.concatenate((self.b, np.multiply(-1, self.A)), axis=1) #join b to the right of a to make tableau
         mat = cdd.Matrix(tableau.tolist())
@@ -44,7 +50,7 @@ class ConvexSet:
         print poly.get_inequalities()
         return vertices
 
-    #pycddlib wants the form (b,-A) for some fucked up reason
+    #pycddlib wants the form (b,-A) for some reason
     def getInequalities(self):
         tableau = np.concatenate((self.b, np.multiply(-1, self.A)), axis=1) #join b to the right of a to make tableau
         mat = cdd.Matrix(tableau.tolist())
@@ -53,7 +59,7 @@ class ConvexSet:
         return poly.get_inequalities()
 
     def writeVertices(self, path):
-        f = open(path,"w")
+        f = open(path, "w")
         f.write(str(self.getVertices()))
         #f.write(self.getJson())
         f.close()
@@ -143,4 +149,4 @@ class ConvexSet:
 #print ConvexSet.makeSquareConstraints(3).b.tolist()
 #print ConvexSet.makeSquareConstraints(3).getVertices()
 
-ConvexSet.testStandardCrossSection()
+#ConvexSet.testStandardCrossSection()

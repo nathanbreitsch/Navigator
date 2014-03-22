@@ -66,29 +66,38 @@ class Word:
     def lastInSequence(self):
         return self.sequence[len(self.sequence)-1]
 
+    #returns dictionary representing the word object
     def serialize(self):
         representation = {}
         #flips, feasible should already be ok
         #representation["sequence"] = self.sequence
         representation["flips"] = self.flips
         representation["feasible"] = self.feasible
-        #need to do some serious serialization of the maps and permutations and shit
-        sequenceJson = []
+        #need to do serialization of the maps and permutations
+        sequenceList = []
         for p in self.sequence:
-            sequenceJson.append(p.serialize())
-        representation["sequence"] = sequenceJson
+            sequenceList.append(p.serialize())
+        representation["sequence"] = sequenceList
         #map
         representation["map"] = self.map.serialize()
         #set
         representation["set"] = self.set.serialize()
         return representation
 
-    def deserialize(self, representation):
-        newObject = Word(representation["sequence"])
-        newObject.flips = representation["flips"]
-        newObject.feasible = representation["feasible"]
-        newObject.map = AffineMap(representation["map"]["A"], representation["set"]["b"])
-        newObject.set = matrix(representation["set"]["A"],representation["set"]["b"])
+    #given dictionary representation of word object, returns word object
+    @staticmethod
+    def deserialize(representation):
+        sequence = []
+        for p in representation["sequence"]:
+            sequence.append(Permutation.deserialize(p))
+        newWord = Word(sequence)
+        newWord.flips = representation["flips"]
+        newWord.feasible = representation["feasible"]
+        newWord.map = AffineMap.deserialize(representation["map"])
+        newWord.set = ConvexSet.deserialize(representation["set"])
+        return newWord
+        #newObject.map = AffineMap(representation["map"]["A"], representation["set"]["b"])
+        #newObject.set = matrix(representation["set"]["A"],representation["set"]["b"])
 
     #returns true iff the block word represents a single F map (single rotation event)
     def isFPrimitive(self):
@@ -100,6 +109,26 @@ class Word:
             if self.flips[i] == "R":
                 return False
         return True
+
+    def testPeriodic(self):
+        #first decide whether the transpositions compose to an element of G
+        netTrans = self.netTransposition()
+        if not self.system.invariant(netTrans):
+            return False
+        #next compose the time map with the preserving permutation
+        Fmap = AffineMap.compose(netTrans.mapRepresentation(), self.map)
+        #construct the set of constraints for fixed point
+        A1 = add(Fmap.A, -1.0 * AffineMap.identity(self.system.dim).A)
+        A2 = add(AffineMap.identity(self.system.dim).A, -1 * Fmap.A)
+        b2 = Fmap.b
+        b1 = -1.0 * b2
+        A = concatenate((A1,A2))
+        b = concatenate((b1,b2))
+        cs = ConvexSet(A,b)
+        FixedPoints = cs.intersect(cs, self.set())
+        #test feasibility
+        solution = cvxSolver.solve(FixedPoints)
+        return (solution['status']=='optimal')
 
     #def writeToIneFile(self, filename):
     #    name = self.eventLogString()
@@ -117,6 +146,9 @@ class Word:
         wordCollection = db.words
         representation = self.serialize()
         wordCollection.insert(representation)
+
+
+
 
 
 

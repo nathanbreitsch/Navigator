@@ -19,10 +19,18 @@ class AffineMap:
         for i in range(0, len(b)):
             tempb[i] *= scalar
 
+    #returns dictionary representation of map
     def serialize(self):
         representation = {}
         representation["A"] = self.A.tolist()
         representation["b"] = self.b.tolist()
+        return representation
+
+    #given dictionary representation, returns map
+    @staticmethod
+    def deserialize(rep):
+        return AffineMap(rep["A"], rep["b"])
+
 
     @staticmethod
     def compose(m1, m2):

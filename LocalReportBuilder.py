@@ -5,27 +5,13 @@ from System import System
 import json
 
 class LocalReportBuilder:
-    def __init__(self):
-        print("i am bad at oo arch")
-
-    def makeReport(self):
-        def phi(perm):
-            #let 3 ~ s, 4 ~ r
-            sIndex = perm.sigma(3)
-
-            temp = []
-            for i in range(0,3):
-                if perm.sigma(i) < perm.sigma(4): #case: not in R
-                    temp.append(1)
-                else: #case in R
-                    temp.append(1-sIndex * (1.0/10.0))
-            for i in range(3,5): #parameters
-                temp.append(0)
-            return temp
-        system = System(5, phi)
-        navi = Navigator(system)
-        navi.navigate()
+    def __init__(self, fileName):
+        print("i am getting better at oo arch")
+        navi = Navigator.readPickle(fileName)
         self.words = navi.wordsGenerated
+
+
+    def makeFMapReport(self):
 
         dict = {}
         dict["regions"] = []
@@ -34,7 +20,7 @@ class LocalReportBuilder:
         for word in self.words:
 
             #if word.isFPrimitive():
-            if len(word.sequence) == 8:
+            if len(word.sequence) == 4:
 
                 #new logic
                 crossSection = word.set.standardCrossSection([0,'?','?',.4,.6])
@@ -77,11 +63,23 @@ class LocalReportBuilder:
         f.close()
 
 
+    def makePeriodicOrbitReport(self):
+        for word in data:
+            if word.testPeriodic():
+                print("\nsequence: ")
+                for trans in word.eventLog:
+                    print trans
+                    print("\t")
+
+
+
+
+
     @staticmethod
     def main():
-        reportBuilder = LocalReportBuilder()
-        reportBuilder.makeReport()
-
+        reportBuilder = LocalReportBuilder("wordsGenerated.p")
+        reportBuilder.makeFMapReport()
+        #reportBuilder.makePeriodicOrbitReport()
     @staticmethod
     def makeCrossSectionConstraints():
         A = [[1,0,0,0,0],[0,0,0,1,0],[0,0,0,0,1],[-1,0,0,0,0],[0,0,0,-1,0],[0,0,0,0,-1]]
